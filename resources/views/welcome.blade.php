@@ -956,7 +956,7 @@
                 </div>
                 <h5 class="font-display font-semibold text-white">Website</h5>
                 <p class="mt-1.5 text-[13.5px] text-white/55">Info lengkap produk &amp; katalog perangkat</p>
-                <span class="mt-3 inline-block font-mono text-xs text-white/50">routerverse.id</span>
+                <span class="mt-3 inline-block font-mono text-xs text-white/50">Global Media Computindo</span>
             </a>
         </div>
 
@@ -1003,7 +1003,7 @@
                     Jual beli router, access point, switch, dan radio wireless second berkualitas untuk bisnis, RT/RW Net, &amp; perusahaan.
                 </p>
                 <div class="mt-5 flex gap-3">
-                    @foreach([['bi-instagram','https://www.instagram.com/globalmediacomputindo/','Instagram'],['bi-whatsapp','https://wa.me/6289526486226','WhatsApp'],['bi-shop','https://shopee.co.id/arshakaid','Shopee'],['bi-bag','https://tk.tokopedia.com/ZSCC5utr3/','Tokopedia'],['bi-globe2','https://routerverse.id','Website']] as $soc)
+                    @foreach([['bi-instagram','https://www.instagram.com/globalmediacomputindo/','Instagram'],['bi-whatsapp','https://wa.me/6289526486226','WhatsApp'],['bi-shop','https://shopee.co.id/arshakaid','Shopee'],['bi-bag','https://tk.tokopedia.com/ZSCC5utr3/','Tokopedia'],['bi-globe2','https://globalcomputindo.co.id','Website']] as $soc)
                     <a href="{{ $soc[1] }}" target="_blank" aria-label="{{ $soc[2] }}"
                        class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-white/15 transition hover:border-white/40 hover:text-white">
                         @if($soc[2] === 'Shopee' && file_exists(public_path('image/shopee-blackwhite.png')))
