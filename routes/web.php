@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PaymentSettingController;
+use Spatie\Sitemap\SitemapGenerator;
 
 // 🔹 Halaman utama (home/landing) - ini yang tampil pertama saat web dibuka
 Route::get('/', function () {
@@ -56,6 +57,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/produk/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/produk/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/produk/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+});
+
+Route::get('/generate-sitemap', function () {
+    SitemapGenerator::create(config('app.url'))
+        ->writeToFile(public_path('sitemap.xml'));
+
+    return 'Sitemap berhasil dibuat';
 });
 
 // 🔹 Logout
