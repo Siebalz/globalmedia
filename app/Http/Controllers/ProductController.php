@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\PaymentSetting;
+use App\Support\ImageWatermarker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -102,7 +103,7 @@ class ProductController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $i => $file) {
-                $path = $file->store('products', 'public');
+                $path = ImageWatermarker::storeWithWatermark($file, 'products');
                 $product->images()->create([
                     'path' => $path,
                     'sort_order' => $i,
@@ -163,7 +164,7 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             $startOrder = (int) $product->images()->max('sort_order') + 1;
             foreach ($request->file('images') as $i => $file) {
-                $path = $file->store('products', 'public');
+                $path = ImageWatermarker::storeWithWatermark($file, 'products');
                 $product->images()->create([
                     'path' => $path,
                     'sort_order' => $startOrder + $i,
