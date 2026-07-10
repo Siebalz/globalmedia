@@ -847,7 +847,7 @@
         </div>
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             @foreach($produkList->take(8) as $produk)
-            <a href="{{ route('products.show', $produk->id) }}" class="reveal card-lift group block overflow-hidden rounded-3xl border border-line bg-white shadow-card">
+            <a href="{{ route('products.show', $produk) }}" class="reveal card-lift group block overflow-hidden rounded-3xl border border-line bg-white shadow-card">
                 @if($produk->image)
                 <div class="aspect-video overflow-hidden bg-canvas">
                     <img src="{{ asset('storage/'.$produk->image) }}" alt="{{ $produk->name }}" class="h-full w-full object-cover transition group-hover:scale-[1.03]">

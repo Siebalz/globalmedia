@@ -28,6 +28,15 @@ class Product extends Model
     ];
 
     /**
+     * Pakai slug (bukan id) sebagai parameter di URL, supaya SEO friendly.
+     * Contoh: /produk/router-wifi-tplink-archer-c6 bukan /produk/5
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
      * Generate slug otomatis dari nama produk, dan pastikan unik.
      */
     public static function generateUniqueSlug(string $name, ?int $ignoreId = null): string
