@@ -163,45 +163,67 @@
             </div>
 
             {{-- CTA buttons --}}
+            @auth
+            {{-- ── USER SUDAH LOGIN ── --}}
             <div class="flex flex-wrap gap-3">
 
-                {{-- Tambah ke Keranjang (user login) --}}
-                @auth
+                {{-- Beli Sekarang: add to cart lalu langsung ke keranjang --}}
+                <form method="POST" action="{{ route('cart.add', $product) }}" class="contents" id="buy-now-form">
+                    @csrf
+                    <input type="hidden" name="redirect" value="checkout">
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-100">
+                        <i class="bi bi-bag-check text-base"></i> Beli Sekarang
+                    </button>
+                </form>
+
+                {{-- Tambah ke Keranjang --}}
                 <form method="POST" action="{{ route('cart.add', $product) }}" class="contents" id="cart-add-form">
                     @csrf
-                    <button type="submit" id="cart-add-btn"
-                            class="inline-flex items-center gap-2 px-5 py-3 bg-brand hover:bg-brand-dark text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-indigo-100">
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-3 border-2 border-brand text-brand hover:bg-indigo-50 font-semibold text-sm rounded-xl transition-all bg-white">
                         <i class="bi bi-cart-plus text-base"></i> Tambah ke Keranjang
                     </button>
                 </form>
-                @else
-                <a href="{{ route('login') }}"
-                   class="inline-flex items-center gap-2 px-5 py-3 bg-brand hover:bg-brand-dark text-white font-semibold text-sm rounded-xl no-underline transition-all shadow-md shadow-indigo-100">
-                    <i class="bi bi-cart-plus text-base"></i> Tambah ke Keranjang
-                </a>
-                @endauth
 
+                {{-- WhatsApp --}}
                 <a href="https://wa.me/6289526486226?text={{ urlencode('Halo, saya mau beli produk: '.$product->name) }}"
-
                    target="_blank"
                    class="cta-whatsapp inline-flex items-center gap-2 px-5 py-3 bg-[#25d366] hover:bg-[#1ebc59] text-white font-semibold text-sm rounded-xl no-underline transition-all shadow-lg shadow-green-100">
-                    <i class="bi bi-whatsapp text-base"></i> Beli via WhatsApp
+                    <i class="bi bi-whatsapp text-base"></i> Tanya via WhatsApp
                 </a>
-
-                @if ($paymentSetting->qrisVisible())
-                    <button onclick="document.getElementById('qrisModal').classList.add('open')"
-                            class="inline-flex items-center gap-2 px-5 py-3 border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-brand hover:bg-indigo-50/50 font-semibold text-sm rounded-xl bg-white transition-all">
-                        <i class="bi bi-qr-code"></i> Bayar QRIS
-                    </button>
-                @endif
-
-                @if ($paymentSetting->bcaVisible())
-                    <button onclick="document.getElementById('bcaModal').classList.add('open')"
-                            class="inline-flex items-center gap-2 px-5 py-3 border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-brand hover:bg-indigo-50/50 font-semibold text-sm rounded-xl bg-white transition-all">
-                        <i class="bi bi-bank"></i> Transfer BCA
-                    </button>
-                @endif
             </div>
+
+            @else
+            {{-- ── GUEST: arahkan login dulu ── --}}
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 mb-2">
+                <p class="text-sm text-indigo-700 font-medium mb-3">
+                    <i class="bi bi-lock me-1"></i> Login untuk membeli produk ini.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    {{-- Middleware auth otomatis simpan URL ini ke session, setelah login langsung balik ke sini --}}
+                    <a href="{{ route('cart.add', $product) }}"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand hover:bg-brand-dark text-white font-bold text-sm rounded-xl no-underline transition-all shadow-md shadow-indigo-100">
+                        <i class="bi bi-bag-check"></i> Login & Beli Sekarang
+                    </a>
+                    <a href="{{ route('register') }}"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-brand text-brand hover:bg-indigo-50 font-semibold text-sm rounded-xl no-underline transition-all bg-white">
+                        <i class="bi bi-person-plus"></i> Daftar Gratis
+                    </a>
+                </div>
+                <p class="text-xs text-indigo-400 mt-2 mb-0">
+                    Sudah punya akun? <a href="{{ route('login') }}" class="text-brand font-semibold no-underline hover:underline">Masuk sekarang</a>
+                </p>
+            </div>
+
+            {{-- Tetap bisa WA walau belum login --}}
+            <a href="https://wa.me/6289526486226?text={{ urlencode('Halo, saya mau tanya produk: '.$product->name) }}"
+               target="_blank"
+               class="cta-whatsapp inline-flex items-center gap-2 px-5 py-3 bg-[#25d366] hover:bg-[#1ebc59] text-white font-semibold text-sm rounded-xl no-underline transition-all shadow-lg shadow-green-100">
+                <i class="bi bi-whatsapp text-base"></i> Tanya via WhatsApp
+            </a>
+
+            @endauth
 
             {{-- Admin actions --}}
             @auth
@@ -229,7 +251,7 @@
 {{-- Related products --}}
 @if ($related->isNotEmpty())
     <div class="mt-2 mb-2">
-        <h6 class="font-bold text-gray-900 text-base mb-4">Template Lainnya</h6>
+        <h6 class="font-bold text-gray-900 text-base mb-4">Produk Lainnya</h6>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             @foreach ($related as $item)
                 <a href="{{ route('products.show', $item) }}" class="no-underline group">

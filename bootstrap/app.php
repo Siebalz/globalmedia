@@ -11,9 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-        ]);
+        // Security headers untuk semua response
+    $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+    // Alias middleware
+    $middleware->alias([
+        'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        'admin.stealth' => \App\Http\Middleware\PreventAdminEnumeration::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

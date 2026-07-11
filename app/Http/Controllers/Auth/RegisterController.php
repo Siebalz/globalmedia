@@ -26,12 +26,14 @@ class RegisterController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
         ]);
 
+        // Role selalu 'user' — admin TIDAK bisa didapat lewat registrasi publik.
+        // Untuk membuat admin pertama, jalankan: php artisan tinker
+        // >>> User::first()->update(['role' => 'admin'])
         User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
-            // User pertama yang daftar otomatis jadi admin (bisa kelola produk)
-            'role' => User::count() === 0 ? 'admin' : 'user',
+            'role'     => 'user',
         ]);
 
         // Setelah registrasi berhasil, arahkan ke login

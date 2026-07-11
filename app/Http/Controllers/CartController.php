@@ -50,6 +50,12 @@ class CartController extends Controller
             return response()->json(['ok' => true, 'count' => $count]);
         }
 
+        // "Beli Sekarang" langsung ke keranjang, "Tambah ke Keranjang" balik ke halaman produk
+        if ($request->input('redirect') === 'checkout') {
+            return redirect()->route('cart.index')
+                ->with('success', "{$product->name} ditambahkan. Silakan lanjutkan checkout.");
+        }
+
         return back()->with('success', "{$product->name} ditambahkan ke keranjang.");
     }
 
@@ -87,9 +93,14 @@ class CartController extends Controller
     public function checkout(Request $request)
     {
         $request->validate([
-            'notes'         => 'nullable|string|max:1000',
-            'payment_proof' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+            'notes'         => 'nullable|string|max:500',
+            'payment_proof' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:3072', // PDF dihapus - cegah exploit via PDF
         ]);
+
+        // Sanitasi notes: strip HTML tags
+        if ($request->filled('notes')) {
+            $request->merge(['notes' => strip_tags($request->notes)]);
+        }
 
         $items = Auth::user()->cartItems()->with('product')->get();
 
@@ -196,11 +207,20 @@ class CartController extends Controller
 
     public function uploadProof(Request $request, ProductOrder $productOrder)
     {
+        // Pastikan order milik user yang sedang login
         abort_if($productOrder->user_id !== Auth::id(), 403);
 
+        // Hanya bisa upload kalau masih pending (cegah overwrite setelah dikonfirmasi)
+        abort_if(! in_array($productOrder->status, ['pending']), 422);
+
         $request->validate([
-            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,webp|max:3072',
         ]);
+
+        // Hapus file lama sebelum simpan yang baru
+        if ($productOrder->payment_proof) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($productOrder->payment_proof);
+        }
 
         $path = $request->file('payment_proof')->store('payment-proofs', 'public');
         $productOrder->update(['payment_proof' => $path]);

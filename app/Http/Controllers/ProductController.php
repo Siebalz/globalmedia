@@ -56,6 +56,7 @@ class ProductController extends Controller
             abort(404);
         }
 
+        // Ambil produk sekategori dulu
         $related = Product::query()
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
@@ -64,6 +65,21 @@ class ProductController extends Controller
             ->latest()
             ->take(4)
             ->get();
+
+        // Kalau kurang dari 4, tambal dengan produk dari kategori lain
+        if ($related->count() < 4) {
+            $excludeIds = $related->pluck('id')->push($product->id);
+
+            $filler = Product::query()
+                ->whereNotIn('id', $excludeIds)
+                ->where('is_active', true)
+                ->with('images')
+                ->latest()
+                ->take(4 - $related->count())
+                ->get();
+
+            $related = $related->concat($filler);
+        }
 
         $paymentSetting = PaymentSetting::current();
 
@@ -84,17 +100,22 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'category' => 'nullable|string|max:100',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'images' => 'nullable|array',
-            'images.*' => 'image|max:2048',
-            'is_active' => 'nullable|boolean',
+            'name'        => 'required|string|max:150',
+            'category'    => 'nullable|string|max:100|alpha_dash',
+            'price'       => 'required|numeric|min:0|max:999999999',
+            'description' => 'nullable|string|max:5000',
+            'images'      => 'nullable|array|max:8',   // max 8 gambar per produk
+            'images.*'    => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'is_active'   => 'nullable|boolean',
         ]);
 
-        $validated['slug'] = Product::generateUniqueSlug($validated['name']);
-        $validated['is_active'] = $request->boolean('is_active', true);
+        // Strip HTML dari semua field teks
+        $validated['name']        = strip_tags($validated['name']);
+        $validated['category']    = $validated['category'] ? strip_tags($validated['category']) : null;
+        $validated['description'] = $validated['description'] ? strip_tags($validated['description'], '<p><br><b><i><ul><li><strong><em>') : null;
+
+        $validated['slug']       = Product::generateUniqueSlug($validated['name']);
+        $validated['is_active']  = $request->boolean('is_active', true);
         $validated['created_by'] = Auth::id();
 
         unset($validated['images']);
@@ -130,16 +151,20 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'category' => 'nullable|string|max:100',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'images' => 'nullable|array',
-            'images.*' => 'image|max:2048',
-            'delete_images' => 'nullable|array',
-            'delete_images.*' => 'integer',
-            'is_active' => 'nullable|boolean',
+            'name'            => 'required|string|max:150',
+            'category'        => 'nullable|string|max:100|alpha_dash',
+            'price'           => 'required|numeric|min:0|max:999999999',
+            'description'     => 'nullable|string|max:5000',
+            'images'          => 'nullable|array|max:8',
+            'images.*'        => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'delete_images'   => 'nullable|array',
+            'delete_images.*' => 'integer|exists:product_images,id',  // pastikan ID valid milik produk ini
+            'is_active'       => 'nullable|boolean',
         ]);
+
+        $validated['name']        = strip_tags($validated['name']);
+        $validated['category']    = $validated['category'] ? strip_tags($validated['category']) : null;
+        $validated['description'] = $validated['description'] ? strip_tags($validated['description'], '<p><br><b><i><ul><li><strong><em>') : null;
 
         if ($product->name !== $validated['name']) {
             $validated['slug'] = Product::generateUniqueSlug($validated['name'], $product->id);
@@ -151,9 +176,11 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        // Hapus gambar lama yang dicentang untuk dihapus
+        // Hapus gambar yang dicentang — whereIn di relasi produk mencegah IDOR
         if ($request->filled('delete_images')) {
-            $toDelete = $product->images()->whereIn('id', $request->input('delete_images'))->get();
+            $toDelete = $product->images()   // scope ke produk ini saja
+                ->whereIn('id', $request->input('delete_images'))
+                ->get();
             foreach ($toDelete as $img) {
                 Storage::disk('public')->delete($img->path);
                 $img->delete();

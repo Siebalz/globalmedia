@@ -55,9 +55,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/keranjang/tambah/{product}', [CartController::class, 'add'])->name('cart.add');
     Route::patch('/keranjang/{cartItem}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/keranjang/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/keranjang/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/keranjang/checkout', [CartController::class, 'checkout'])->middleware('throttle:5,1')->name('cart.checkout');
     Route::get('/pesanan-produk', [CartController::class, 'orders'])->name('cart.orders');
-    Route::patch('/pesanan-produk/{productOrder}/bukti', [CartController::class, 'uploadProof'])->name('cart.upload-proof');
+    Route::patch('/pesanan-produk/{productOrder}/bukti', [CartController::class, 'uploadProof'])->middleware('throttle:10,1')->name('cart.upload-proof');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -66,9 +66,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 // ─────────────────────────────────────────────────────────────
 
-Route::get('/generate-sitemap', function () {
+Route::middleware(['auth', 'admin'])->get('/generate-sitemap', function () {
     SitemapGenerator::create(config('app.url'))->writeToFile(public_path('sitemap.xml'));
-    return 'Sitemap berhasil dibuat';
-});
+    return response('Sitemap berhasil dibuat.')->header('Content-Type', 'text/plain');
+})->name('sitemap.generate');
 
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
