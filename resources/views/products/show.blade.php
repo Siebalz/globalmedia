@@ -164,7 +164,25 @@
 
             {{-- CTA buttons --}}
             <div class="flex flex-wrap gap-3">
+
+                {{-- Tambah ke Keranjang (user login) --}}
+                @auth
+                <form method="POST" action="{{ route('cart.add', $product) }}" class="contents" id="cart-add-form">
+                    @csrf
+                    <button type="submit" id="cart-add-btn"
+                            class="inline-flex items-center gap-2 px-5 py-3 bg-brand hover:bg-brand-dark text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-indigo-100">
+                        <i class="bi bi-cart-plus text-base"></i> Tambah ke Keranjang
+                    </button>
+                </form>
+                @else
+                <a href="{{ route('login') }}"
+                   class="inline-flex items-center gap-2 px-5 py-3 bg-brand hover:bg-brand-dark text-white font-semibold text-sm rounded-xl no-underline transition-all shadow-md shadow-indigo-100">
+                    <i class="bi bi-cart-plus text-base"></i> Tambah ke Keranjang
+                </a>
+                @endauth
+
                 <a href="https://wa.me/6289526486226?text={{ urlencode('Halo, saya mau beli produk: '.$product->name) }}"
+
                    target="_blank"
                    class="cta-whatsapp inline-flex items-center gap-2 px-5 py-3 bg-[#25d366] hover:bg-[#1ebc59] text-white font-semibold text-sm rounded-xl no-underline transition-all shadow-lg shadow-green-100">
                     <i class="bi bi-whatsapp text-base"></i> Beli via WhatsApp

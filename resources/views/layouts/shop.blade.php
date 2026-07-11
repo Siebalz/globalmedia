@@ -90,6 +90,21 @@
 
                 <div class="ml-3 flex items-center gap-2">
                     @auth
+                        <a href="{{ route('cart.index') }}"
+                           class="relative inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-indigo-50 transition-colors text-gray-600 hover:text-brand no-underline"
+                           title="Keranjang">
+                            <i class="bi bi-cart3 text-lg"></i>
+                            @php($cartCount = Auth::user()->cartItems()->count())
+                            @if ($cartCount > 0)
+                                <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1
+                                             bg-brand text-white text-[10px] font-bold rounded-full
+                                             flex items-center justify-center leading-none">
+                                    {{ $cartCount > 99 ? '99+' : $cartCount }}
+                                </span>
+                            @endif
+                        </a>
+                    @endauth
+                    @auth
                         <a href="{{ route('dashboard') }}"
                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors no-underline shadow-sm shadow-indigo-200">
                             <i class="bi bi-grid-1x2 text-xs"></i> Dashboard
@@ -131,6 +146,16 @@
                class="block px-4 py-2.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-brand hover:bg-indigo-50 no-underline transition-colors">
                 Kontak
             </a>
+            @auth
+                <a href="{{ route('cart.index') }}"
+                   class="block px-4 py-2.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-brand hover:bg-indigo-50 no-underline transition-colors flex items-center gap-2">
+                    <i class="bi bi-cart3"></i> Keranjang
+                    @php($mobileCartCount = Auth::user()->cartItems()->count())
+                    @if ($mobileCartCount > 0)
+                        <span class="ml-auto bg-brand text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $mobileCartCount }}</span>
+                    @endif
+                </a>
+            @endauth
             <div class="flex gap-2 mt-3">
                 @auth
                     <a href="{{ route('dashboard') }}"

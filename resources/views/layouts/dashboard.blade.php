@@ -174,7 +174,29 @@
             <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
                 <i class="bi bi-shop"></i> Produk / Perangkat
             </a>
+            <a href="{{ route('cart.index') }}" class="nav-link {{ request()->routeIs('cart.index') ? 'active' : '' }}">
+                <i class="bi bi-cart3"></i> Keranjang
+                @php($sidebarCartCount = Auth::user()->cartItems()->count())
+                @if ($sidebarCartCount > 0)
+                    <span class="ms-auto badge rounded-pill" style="background:rgba(255,255,255,0.25);font-size:0.7rem;">{{ $sidebarCartCount }}</span>
+                @endif
+            </a>
+            <a href="{{ route('cart.orders') }}" class="nav-link {{ request()->routeIs('cart.orders') ? 'active' : '' }}">
+                <i class="bi bi-bag-check"></i> Pesanan Saya
+                @php($pendingMyOrders = Auth::user()->productOrders()->where('status','pending')->count())
+                @if ($pendingMyOrders > 0)
+                    <span class="ms-auto badge rounded-pill" style="background:rgba(255,255,255,0.25);font-size:0.7rem;">{{ $pendingMyOrders }}</span>
+                @endif
+            </a>
             @if (Auth::user()->isAdmin())
+                {{-- Pesanan produk fisik --}}
+                <a href="{{ route('cart.admin-orders') }}" class="nav-link {{ request()->routeIs('cart.admin-orders') ? 'active' : '' }}">
+                    <i class="bi bi-bag-check"></i> Pesanan Produk
+                    @php($pendingProducts = \App\Models\ProductOrder::where('status','pending')->count())
+                    @if ($pendingProducts > 0)
+                        <span class="ms-auto badge rounded-pill" style="background:rgba(255,255,255,0.25);font-size:0.7rem;">{{ $pendingProducts }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('settings.payment.edit') }}" class="nav-link {{ request()->routeIs('settings.payment.edit') ? 'active' : '' }}">
                     <i class="bi bi-gear"></i> Pengaturan
                 </a>

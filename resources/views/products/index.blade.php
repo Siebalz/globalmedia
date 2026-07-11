@@ -174,10 +174,28 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
                     <p class="text-xs text-gray-400 mb-3 flex items-center gap-1">
                         <i class="bi bi-bag-check"></i> Terjual {{ $product->sold_count }}
                     </p>
-                    <a href="{{ route('products.show', $product) }}"
-                       class="mt-auto block text-center text-sm font-semibold py-2 rounded-xl border-2 border-brand text-brand hover:bg-brand hover:text-white transition-all no-underline">
-                        Lihat Detail
-                    </a>
+                    <div class="mt-auto flex gap-2">
+                        <a href="{{ route('products.show', $product) }}"
+                           class="flex-1 text-center text-sm font-semibold py-2 rounded-xl border-2 border-brand text-brand hover:bg-brand hover:text-white transition-all no-underline">
+                            Detail
+                        </a>
+                        @auth
+                        <form method="POST" action="{{ route('cart.add', $product) }}">
+                            @csrf
+                            <button type="submit"
+                                    title="Tambah ke Keranjang"
+                                    class="w-9 h-9 flex items-center justify-center rounded-xl bg-brand text-white hover:bg-brand-dark transition-colors border-0 text-base">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </form>
+                        @else
+                        <a href="{{ route('login') }}"
+                           title="Login untuk tambah ke keranjang"
+                           class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-400 hover:bg-indigo-50 hover:text-brand transition-colors no-underline text-base">
+                            <i class="bi bi-cart-plus"></i>
+                        </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         @endforeach
