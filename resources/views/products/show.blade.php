@@ -201,8 +201,12 @@
                     <i class="bi bi-lock me-1"></i> Login untuk membeli produk ini.
                 </p>
                 <div class="flex flex-wrap gap-2">
-                    {{-- Middleware auth otomatis simpan URL ini ke session, setelah login langsung balik ke sini --}}
-                    <a href="{{ route('cart.add', $product) }}"
+                    {{-- 
+                        Arahkan ke halaman login dengan ?intended=URL produk ini.
+                        LoginController akan simpan ke session, setelah login
+                        redirect()->intended() bawa balik ke halaman ini.
+                    --}}
+                    <a href="{{ route('login') }}?intended={{ urlencode(url()->current()) }}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand hover:bg-brand-dark text-white font-bold text-sm rounded-xl no-underline transition-all shadow-md shadow-indigo-100">
                         <i class="bi bi-bag-check"></i> Login & Beli Sekarang
                     </a>

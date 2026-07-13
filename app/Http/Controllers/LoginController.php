@@ -10,8 +10,20 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        // Hapus intended lama yang mungkin berisi URL POST (dari middleware auth sebelumnya)
+        // supaya tidak redirect ke route yang hanya terima POST setelah login
+        session()->forget('url.intended');
+
+        // Simpan intended baru dari ?intended= kalau ada — harus URL internal
+        if ($request->filled('intended')) {
+            $intended = $request->query('intended');
+            if (str_starts_with($intended, url('/'))) {
+                session()->put('url.intended', $intended);
+            }
+        }
+
         return view('auth.login');
     }
 
@@ -45,7 +57,7 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
 
-            // ✅ Setelah login, langsung arahkan ke dashboard
+            // Setelah login, ke URL yang disimpan (halaman produk dll) atau dashboard
             return redirect()->intended(route('dashboard'));
         }
 
