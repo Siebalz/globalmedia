@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PaymentSettingController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ReportController;
 use Spatie\Sitemap\SitemapGenerator;
 
 // 🔹 Halaman utama (home/landing)
@@ -52,7 +53,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // ─────────────────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
     Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/keranjang/tambah/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::match(['GET','POST'], '/keranjang/tambah/{product}', [CartController::class, 'add'])->name('cart.add');
     Route::patch('/keranjang/{cartItem}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/keranjang/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/keranjang/checkout', [CartController::class, 'checkout'])->middleware('throttle:5,1')->name('cart.checkout');
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/pesanan-produk', [CartController::class, 'adminOrders'])->name('cart.admin-orders');
     Route::patch('/dashboard/pesanan-produk/{productOrder}/status', [CartController::class, 'adminUpdateStatus'])->name('cart.admin-update-status');
+    Route::get('/dashboard/laporan', [ReportController::class, 'index'])->name('admin.reports');
 });
 // ─────────────────────────────────────────────────────────────
 

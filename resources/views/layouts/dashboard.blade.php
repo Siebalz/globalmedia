@@ -197,6 +197,9 @@
                         <span class="ms-auto badge rounded-pill" style="background:rgba(255,255,255,0.25);font-size:0.7rem;">{{ $pendingProducts }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.reports') }}" class="nav-link {{ request()->routeIs('admin.reports') ? 'active' : '' }}">
+                    <i class="bi bi-graph-up-arrow"></i> Laporan
+                </a>
                 <a href="{{ route('settings.payment.edit') }}" class="nav-link {{ request()->routeIs('settings.payment.edit') ? 'active' : '' }}">
                     <i class="bi bi-gear"></i> Pengaturan
                 </a>
