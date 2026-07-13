@@ -34,20 +34,33 @@
             </div>
 
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-12 mb-3">
                     <label class="form-label fw-semibold">Kategori</label>
-                    <input type="text" name="category" list="category-suggestions" class="form-control"
-                        placeholder="Pilih atau ketik sendiri"
-                        value="{{ old('category', $product->category ?? '') }}">
-                    <datalist id="category-suggestions">
-                        <option value="Router Mikrotik">
-                        <option value="Access Point">
-                        <option value="Switch">
-                        <option value="Radio Wireless">
-                        <option value="Antena">
-                        <option value="Kabel & Aksesoris">
-                    </datalist>
-                    <div class="form-text">Ketik bebas, atau pilih dari saran yang muncul.</div>
+                    <input type="hidden" name="category" id="category-value"
+                           value="{{ old('category', $product->category ?? '') }}">
+
+                    {{-- Pill buttons --}}
+                    <div class="d-flex flex-wrap gap-2 mb-2" id="category-pills">
+                        @php
+                            $cats = ['Router','Switch','Akses Poin','Radio Wireless','Antena','Kabel & Aksesoris','x86'];
+                            $selected = old('category', $product->category ?? '');
+                        @endphp
+                        @foreach ($cats as $cat)
+                            <button type="button"
+                                    class="category-pill btn btn-sm {{ $selected === $cat ? 'btn-primary' : 'btn-outline-secondary' }}"
+                                    data-value="{{ $cat }}"
+                                    style="border-radius:999px;font-size:.78rem;padding:5px 14px;font-weight:600;">
+                                {{ $cat }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Input manual kalau mau ketik lain --}}
+                    <input type="text" id="category-custom" class="form-control form-control-sm"
+                           placeholder="Atau ketik kategori lain..."
+                           value="{{ !in_array(old('category', $product->category ?? ''), ['Router Mikrotik','Access Point','Switch','Radio Wireless','Antena','Kabel & Aksesoris']) ? old('category', $product->category ?? '') : '' }}"
+                           style="max-width:260px;">
+                    <div class="form-text">Klik salah satu, atau ketik sendiri di bawahnya.</div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">
@@ -244,6 +257,36 @@
 
 @push('scripts')
 <script>
+// ── Kategori pill logic ──
+(function () {
+    const pills       = document.querySelectorAll('.category-pill');
+    const hiddenInput = document.getElementById('category-value');
+    const customInput = document.getElementById('category-custom');
+
+    // Klik pill → set nilai, highlight pill, kosongkan custom input
+    pills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+            pills.forEach(p => {
+                p.classList.remove('btn-primary');
+                p.classList.add('btn-outline-secondary');
+            });
+            pill.classList.remove('btn-outline-secondary');
+            pill.classList.add('btn-primary');
+            hiddenInput.value = pill.dataset.value;
+            customInput.value = ''; // clear custom saat pilih pill
+        });
+    });
+
+    // Ketik di custom → deselect semua pill, pakai nilai custom
+    customInput.addEventListener('input', function () {
+        pills.forEach(p => {
+            p.classList.remove('btn-primary');
+            p.classList.add('btn-outline-secondary');
+        });
+        hiddenInput.value = customInput.value.trim();
+    });
+})();
+
 (function () {
     const dropzone      = document.getElementById('dropzone');
     const fileInput      = document.getElementById('field-images');
