@@ -101,7 +101,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
-            'category'    => 'nullable|string|max:100|alpha_dash',
+            'category'    => 'nullable|string|max:100',
             'price'       => 'required|numeric|min:0|max:999999999',
             'description' => 'nullable|string|max:5000',
             'images'      => 'nullable|array|max:8',   // max 8 gambar per produk
@@ -152,7 +152,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name'            => 'required|string|max:150',
-            'category'        => 'nullable|string|max:100|alpha_dash',
+            'category'        => 'nullable|string|max:100',
             'price'           => 'required|numeric|min:0|max:999999999',
             'description'     => 'nullable|string|max:5000',
             'images'          => 'nullable|array|max:8',
