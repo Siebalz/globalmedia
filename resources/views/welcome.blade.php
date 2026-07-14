@@ -319,6 +319,114 @@
             100% { transform: translate(-15px, 25px) scale(0.92); opacity: 0.3; }
         }
 
+        /* ─── HERO PRODUCT IMAGE GLOW PANEL ─── */
+        .hero-product-wrap {
+            position: relative;
+        }
+        .hero-product-glow {
+            position: absolute;
+            inset: -10%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .hero-product-glow::before,
+        .hero-product-glow::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+        .hero-product-glow::before {
+            width: 78%;
+            height: 78%;
+            top: 8%;
+            left: 10%;
+            background: radial-gradient(circle at 40% 35%, rgba(59,70,242,0.55), rgba(124,133,245,0.28) 55%, transparent 75%);
+            animation: productGlowPulse 6s ease-in-out infinite alternate;
+        }
+        .hero-product-glow::after {
+            width: 55%;
+            height: 55%;
+            bottom: 4%;
+            right: 6%;
+            background: radial-gradient(circle at 60% 60%, rgba(0,194,168,0.35), transparent 70%);
+            animation: productGlowPulse2 7s ease-in-out infinite alternate;
+        }
+        .hero-product-ring {
+            position: absolute;
+            inset: 4%;
+            border-radius: 50%;
+            border: 1px solid rgba(59,70,242,0.18);
+            z-index: 0;
+            pointer-events: none;
+            animation: productRingSpin 22s linear infinite;
+        }
+        .hero-product-ring::before {
+            content: "";
+            position: absolute;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #3B46F2;
+            box-shadow: 0 0 12px 3px rgba(59,70,242,0.7);
+            top: -4px; left: 50%;
+            margin-left: -4px;
+        }
+        .hero-product-orbit-dot {
+            position: absolute;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #00C2A8;
+            box-shadow: 0 0 10px 3px rgba(0,194,168,0.6);
+            z-index: 0;
+            pointer-events: none;
+            animation: productOrbitSpin 15s linear infinite reverse;
+        }
+        .hero-product-grid {
+            position: absolute;
+            inset: 12%;
+            border-radius: 24px;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(59,70,242,0.10) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,70,242,0.10) 1px, transparent 1px);
+            background-size: 28px 28px;
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 72%);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 72%);
+            animation: productGridDrift 9s ease-in-out infinite alternate;
+        }
+        .hero-product-wrap img { position: relative; z-index: 1; }
+
+        @keyframes productGlowPulse {
+            0%   { transform: scale(1) translate(0,0); opacity: 0.65; }
+            50%  { transform: scale(1.12) translate(10px,-8px); opacity: 0.9; }
+            100% { transform: scale(0.95) translate(-8px,6px); opacity: 0.55; }
+        }
+        @keyframes productGlowPulse2 {
+            0%   { transform: scale(1) translate(0,0); opacity: 0.4; }
+            50%  { transform: scale(1.18) translate(-10px,8px); opacity: 0.7; }
+            100% { transform: scale(0.9) translate(8px,-6px); opacity: 0.3; }
+        }
+        @keyframes productRingSpin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes productOrbitSpin {
+            0%   { transform: rotate(0deg) translateX(46%) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(46%) rotate(-360deg); }
+        }
+        @keyframes productGridDrift {
+            0%   { background-position: 0 0; opacity: 0.6; }
+            100% { background-position: 14px 14px; opacity: 0.35; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-product-glow::before,
+            .hero-product-glow::after,
+            .hero-product-ring,
+            .hero-product-orbit-dot,
+            .hero-product-grid { animation: none !important; }
+        }
+
         /* ─── Reveal ─── */
         .reveal { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
         .reveal.is-visible { opacity: 1; transform: translateY(0); }
@@ -435,11 +543,11 @@
 ════════════════════════════════════════════ -->
 <section class="bg-grid relative overflow-hidden pt-36 pb-24 lg:pt-48 lg:pb-32">
     <!-- Animated glow blobs -->
-    <div class="hero-glow-wrap" aria-hidden="true">
+    <!-- <div class="hero-glow-wrap" aria-hidden="true">
         <div class="hero-glow hero-glow-1"></div>
         <div class="hero-glow hero-glow-2"></div>
         <div class="hero-glow hero-glow-3"></div>
-    </div>
+    </div> -->
 
     <div class="relative mx-auto grid max-w-6xl items-center gap-14 px-6 lg:grid-cols-2 lg:px-8">
         <div class="reveal text-center lg:text-left">
@@ -473,7 +581,13 @@
         </div>
 
         <div class="reveal flex justify-center">
-            <img src="{{ asset('image/datacenter.png') }}" alt="Ilustrasi perangkat jaringan" class="w-full max-w-[420px] drop-shadow-2xl">
+            <div class="hero-product-wrap w-full max-w-[420px]">
+                <div class="hero-product-glow" aria-hidden="true"></div>
+                <div class="hero-product-grid" aria-hidden="true"></div>
+                <div class="hero-product-ring" aria-hidden="true"></div>
+                <div class="hero-product-orbit-dot" style="top:50%;left:50%;" aria-hidden="true"></div>
+                <img src="{{ asset('image/alat.png') }}" alt="Ilustrasi perangkat jaringan" class="w-full drop-shadow-2xl">
+            </div>
         </div>
     </div>
 </section>
