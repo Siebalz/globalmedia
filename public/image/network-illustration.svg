@@ -1,0 +1,104 @@
+<svg width="560" height="420" viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="towerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4338CA"/>
+    </linearGradient>
+    <linearGradient id="baseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#818CF8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="routerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background glow -->
+  <circle cx="300" cy="190" r="190" fill="url(#glowGrad)"/>
+
+  <!-- floating signal rings top left -->
+  <g opacity="0.5">
+    <circle cx="90" cy="80" r="3" fill="#4F46E5"/>
+    <circle cx="90" cy="80" r="16" fill="none" stroke="#4F46E5" stroke-width="2" opacity="0.35"/>
+    <circle cx="90" cy="80" r="28" fill="none" stroke="#4F46E5" stroke-width="1.5" opacity="0.2"/>
+  </g>
+
+  <!-- connection dots + lines (network mesh) -->
+  <g stroke="#C7D2FE" stroke-width="1.5" opacity="0.6">
+    <line x1="60" y1="260" x2="140" y2="220"/>
+    <line x1="140" y1="220" x2="120" y2="150"/>
+    <line x1="460" y1="270" x2="500" y2="210"/>
+    <line x1="500" y1="210" x2="470" y2="140"/>
+    <line x1="440" y1="330" x2="500" y2="210"/>
+  </g>
+  <g fill="#818CF8">
+    <circle cx="60" cy="260" r="4"/>
+    <circle cx="140" cy="220" r="4"/>
+    <circle cx="120" cy="150" r="4"/>
+    <circle cx="460" cy="270" r="4"/>
+    <circle cx="500" cy="210" r="4"/>
+    <circle cx="470" cy="140" r="4"/>
+    <circle cx="440" cy="330" r="4"/>
+  </g>
+
+  <!-- radio / signal tower (center-left) -->
+  <g transform="translate(150,90)">
+    <!-- signal waves -->
+    <path d="M -10 40 Q -35 15 -10 -10" fill="none" stroke="#6366F1" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+    <path d="M -25 55 Q -60 15 -25 -25" fill="none" stroke="#6366F1" stroke-width="4" stroke-linecap="round" opacity="0.3"/>
+    <path d="M 55 40 Q 80 15 55 -10" fill="none" stroke="#6366F1" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+    <path d="M 70 55 Q 105 15 70 -25" fill="none" stroke="#6366F1" stroke-width="4" stroke-linecap="round" opacity="0.3"/>
+
+    <!-- tower mast -->
+    <polygon points="22,15 28,15 34,190 16,190" fill="url(#towerGrad)"/>
+    <line x1="14" y1="60" x2="36" y2="45" stroke="#4338CA" stroke-width="2.5"/>
+    <line x1="12" y1="100" x2="38" y2="82" stroke="#4338CA" stroke-width="2.5"/>
+    <line x1="10" y1="140" x2="40" y2="120" stroke="#4338CA" stroke-width="2.5"/>
+
+    <!-- top beacon -->
+    <circle cx="25" cy="6" r="9" fill="#FBBF24"/>
+    <circle cx="25" cy="6" r="15" fill="none" stroke="#FBBF24" stroke-width="2" opacity="0.4"/>
+
+    <!-- base pad -->
+    <rect x="0" y="188" width="50" height="14" rx="3" fill="url(#baseGrad)"/>
+  </g>
+
+  <!-- router / switch device (right, isometric-ish flat) -->
+  <g transform="translate(330,230)">
+    <rect x="0" y="0" width="180" height="46" rx="10" fill="url(#routerGrad)"/>
+    <rect x="0" y="0" width="180" height="46" rx="10" fill="none" stroke="#334155" stroke-width="1"/>
+    <!-- ports -->
+    <g fill="#34E0B3">
+      <circle cx="24" cy="23" r="4"><animate attributeName="opacity" values="1;0.35;1" dur="2.4s" repeatCount="indefinite"/></circle>
+      <circle cx="42" cy="23" r="4" fill="#FBBF24"><animate attributeName="opacity" values="1;0.35;1" dur="2.6s" begin="0.4s" repeatCount="indefinite"/></circle>
+      <circle cx="60" cy="23" r="4" fill="#475569"/>
+      <circle cx="78" cy="23" r="4" fill="#475569"/>
+      <circle cx="96" cy="23" r="4" fill="#475569"/>
+      <circle cx="114" cy="23" r="4" fill="#475569"/>
+      <circle cx="132" cy="23" r="4" fill="#475569"/>
+      <circle cx="150" cy="23" r="4" fill="#475569"/>
+    </g>
+    <!-- antenna -->
+    <line x1="160" y1="0" x2="168" y2="-24" stroke="#1E293B" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="168" cy="-26" r="3.5" fill="#4F46E5"/>
+  </g>
+
+  <!-- wifi symbol floating bottom left -->
+  <g transform="translate(70,330)" stroke="#6366F1" fill="none" stroke-width="5" stroke-linecap="round">
+    <path d="M0 20 A 40 40 0 0 1 56 20"/>
+    <path d="M12 32 A 24 24 0 0 1 44 32"/>
+    <circle cx="28" cy="44" r="5" fill="#6366F1" stroke="none"/>
+  </g>
+
+  <!-- small satellite/globe accent top right -->
+  <g transform="translate(430,40)">
+    <circle cx="0" cy="0" r="18" fill="none" stroke="#A5B4FC" stroke-width="2"/>
+    <ellipse cx="0" cy="0" rx="18" ry="7" fill="none" stroke="#A5B4FC" stroke-width="1.5"/>
+    <line x1="-18" y1="0" x2="18" y2="0" stroke="#A5B4FC" stroke-width="1.5"/>
+  </g>
+</svg>

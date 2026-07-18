@@ -25,27 +25,31 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .sort-pill:hover { border-color: #c7caef; color: #3B46F2; }
 .sort-pill.active { background: #3B46F2; border-color: #3B46F2; color: #fff; }
 
-/* Hero: simple aesthetic, white theme */
+/* Hero: dark blue gradient theme */
 .hero-net {
     position: relative;
     overflow: hidden;
-    background: #FFFFFF;
-    border: 1px solid #EEF0F7;
+    background: linear-gradient(120deg, #1E1B7A 0%, #3730D8 55%, #4F46E5 100%);
 }
 .hero-eyebrow { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 .hero-visual {
-    position: absolute;
-    right: -10px;
-    bottom: -10px;
-    height: 100%;
-    max-height: 220px;
-    width: auto;
-    object-fit: contain;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 260px;
+    height: auto;
     pointer-events: none;
     user-select: none;
+    filter: drop-shadow(0 10px 24px rgba(0,0,0,.15));
 }
-@media (max-width: 767px) {
-    .hero-visual { display: none; }
+.trust-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 10px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #EEF0FF;
+    white-space: nowrap;
 }
 
 /* Best seller badge (auto, based on sold_count) */
@@ -84,33 +88,38 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 @section('content')
 
 {{-- Hero --}}
-<div class="hero-net rounded-2xl mb-6 p-5 md:p-8">
+<div class="hero-net rounded-2xl mb-6 p-5 md:p-7">
     <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-5">
 
-        <div class="min-w-0 relative z-10 max-w-lg">
-            <span class="hero-eyebrow inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-500 mb-2">
-                <span class="text-indigo-300">[</span> Global Media Computindo <span class="text-indigo-300">]</span>
+        <div class="min-w-0 relative z-10">
+            <span class="hero-eyebrow inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-200/90 mb-2">
+                Global Media Computindo
             </span>
-            <h1 class="text-xl md:text-3xl font-extrabold text-gray-900 leading-snug mb-2">
-                Router, AP, Switch &amp; Radio <span class="text-brand">Second</span>
+            <h1 class="text-xl md:text-2xl font-extrabold text-white leading-snug mb-1.5">
+                Router, AP, Switch &amp; Radio Second
             </h1>
-            <p class="text-sm md:text-base text-gray-500 mb-4">
+            <p class="text-sm text-indigo-100/80 mb-3">
                 Sudah dicek fisik &amp; fungsi, bergaransi toko — siap pakai.
             </p>
-            <div class="flex items-center gap-4">
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600">
-                    <i class="bi bi-patch-check-fill text-emerald-500"></i> Dicek fisik &amp; fungsi
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="trust-chip">
+                    <i class="bi bi-patch-check-fill text-emerald-300"></i> Dicek fisik &amp; fungsi
                 </span>
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600">
-                    <i class="bi bi-shield-check text-amber-500"></i> Garansi toko
+                <span class="trust-chip">
+                    <i class="bi bi-shield-check text-amber-300"></i> Garansi toko
+                </span>
+                <span class="trust-chip">
+                    <i class="bi bi-box-seam text-sky-300"></i> Packing bubble wrap
                 </span>
             </div>
         </div>
 
-        {{-- Vector illustration, ditempel di kanan --}}
-        <img src="{{ asset('image/hero-shopping.png') }}"
-             alt="Ilustrasi belanja online"
-             class="hero-visual hidden md:block">
+        {{-- Ilustrasi, ditempel di kanan --}}
+        <div class="shrink-0 w-full md:w-auto flex justify-center relative z-10">
+            <img src="{{ asset('image/hero-shopping.png') }}"
+                 alt="Ilustrasi belanja online"
+                 class="hero-visual">
+        </div>
 
     </div>
 </div>
