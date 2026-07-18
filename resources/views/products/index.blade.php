@@ -12,6 +12,18 @@
 
 /* Custom select styling */
 select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa0b3' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+
+/* Category sidebar */
+.cat-link { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; font-size: 13px; color: #4b5066; text-decoration: none; transition: background .15s ease, color .15s ease; }
+.cat-link:hover { background: #f4f5fb; color: #3B46F2; }
+.cat-link.active { background: #eef0fd; color: #3B46F2; font-weight: 600; }
+.cat-link .cat-caret { font-size: 9px; opacity: 0; transition: opacity .15s ease; }
+.cat-link.active .cat-caret { opacity: 1; }
+
+/* Sort pills */
+.sort-pill { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; border: 1.5px solid #e5e7f0; color: #4b5066; transition: all .15s ease; white-space: nowrap; }
+.sort-pill:hover { border-color: #c7caef; color: #3B46F2; }
+.sort-pill.active { background: #3B46F2; border-color: #3B46F2; color: #fff; }
 </style>
 @endpush
 
@@ -43,58 +55,76 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
     </div>
 </div>
 
-{{-- Toolbar --}}
-<div class="bg-white border border-gray-100 rounded-2xl px-4 py-3 mb-5 flex flex-wrap gap-3 items-center shadow-sm">
-    <form method="GET" action="{{ route('products.index') }}" class="flex flex-wrap gap-2.5 items-center flex-1">
+{{-- Body layout: sidebar kategori + konten --}}
+<div class="flex flex-col lg:flex-row gap-5 items-start">
 
-        {{-- Search --}}
-        <div class="relative flex-1 min-w-[180px]">
-            <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-            <input type="text" name="q"
-                   class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
-                   placeholder="Cari nama produk (RB750Gr3, UniFi AP, dll)..."
-                   value="{{ request('q') }}">
+    {{-- Sidebar kategori --}}
+    <aside class="w-full lg:w-56 shrink-0 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm lg:sticky lg:top-4">
+        <p class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-2 px-1 flex items-center gap-1.5">
+            <i class="bi bi-list-ul"></i> Kategori
+        </p>
+        <nav class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
+            <a href="{{ route('products.index', request()->except(['category', 'page'])) }}"
+               class="cat-link shrink-0 {{ request('category') ? '' : 'active' }}">
+                <i class="bi bi-caret-right-fill cat-caret"></i> Semua Produk
+            </a>
+            @foreach ($categories as $cat)
+                <a href="{{ route('products.index', array_merge(request()->except('page'), ['category' => $cat])) }}"
+                   class="cat-link shrink-0 {{ request('category') == $cat ? 'active' : '' }}">
+                    <i class="bi bi-caret-right-fill cat-caret"></i> {{ $cat }}
+                </a>
+            @endforeach
+        </nav>
+    </aside>
+
+    {{-- Konten utama --}}
+    <div class="flex-1 min-w-0 w-full">
+
+        {{-- Toolbar --}}
+        <div class="bg-white border border-gray-100 rounded-2xl px-4 py-3 mb-5 shadow-sm">
+            <div class="flex flex-wrap gap-3 items-center">
+                <form method="GET" action="{{ route('products.index') }}" class="flex-1 min-w-[200px]">
+                    @if (request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+                    @if (request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
+                    <div class="relative">
+                        <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                        <input type="text" name="q"
+                               class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+                               placeholder="Cari nama produk (RB750Gr3, UniFi AP, dll)..."
+                               value="{{ request('q') }}">
+                    </div>
+                </form>
+
+                @auth
+                    @if (Auth::user()->isAdmin())
+                        <a href="{{ route('products.create') }}"
+                           class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand-dark transition-colors no-underline whitespace-nowrap">
+                            <i class="bi bi-plus-lg"></i> Tambah Produk
+                        </a>
+                    @endif
+                @endauth
+            </div>
+
+            {{-- Sort pills --}}
+            <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-gray-50">
+                <span class="text-xs font-semibold text-gray-400 mr-1">Urutkan:</span>
+                @php
+                    $sortOptions = ['terbaru' => 'Terbaru', 'terlaris' => 'Terlaris', 'termurah' => 'Termurah', 'termahal' => 'Termahal'];
+                    $currentSort = request('sort', 'terbaru');
+                @endphp
+                @foreach ($sortOptions as $key => $label)
+                    <a href="{{ route('products.index', array_merge(request()->except(['sort', 'page']), ['sort' => $key])) }}"
+                       class="sort-pill {{ $currentSort == $key ? 'active' : '' }}">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
         </div>
 
-        {{-- Category --}}
-        <select name="category" onchange="this.form.submit()"
-                class="text-sm border border-gray-200 rounded-xl px-3 py-2 pr-8 bg-white text-gray-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all cursor-pointer">
-            <option value="">Semua Kategori</option>
-            @foreach ($categories as $cat)
-                <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-            @endforeach
-        </select>
-
-        {{-- Sort --}}
-        <select name="sort" onchange="this.form.submit()"
-                class="text-sm border border-gray-200 rounded-xl px-3 py-2 pr-8 bg-white text-gray-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all cursor-pointer">
-            <option value="terbaru"  {{ request('sort', 'terbaru') == 'terbaru'  ? 'selected' : '' }}>Terbaru</option>
-            <option value="terlaris" {{ request('sort') == 'terlaris' ? 'selected' : '' }}>Terlaris</option>
-            <option value="termurah" {{ request('sort') == 'termurah' ? 'selected' : '' }}>Termurah</option>
-            <option value="termahal" {{ request('sort') == 'termahal' ? 'selected' : '' }}>Termahal</option>
-        </select>
-
-        <button type="submit"
-                class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand-dark transition-colors">
-            Cari
-        </button>
-    </form>
-
-    @auth
-        @if (Auth::user()->isAdmin())
-            <div class="hidden md:block w-px h-6 bg-gray-100"></div>
-            <a href="{{ route('products.create') }}"
-               class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand-dark transition-colors no-underline whitespace-nowrap">
-                <i class="bi bi-plus-lg"></i> Tambah Produk
-            </a>
+        {{-- Result count --}}
+        @if (! $products->isEmpty())
+            <p class="text-xs text-gray-400 mb-4">Menampilkan {{ $products->count() }} dari {{ $products->total() }} produk</p>
         @endif
-    @endauth
-</div>
-
-{{-- Result count --}}
-@if (! $products->isEmpty())
-    <p class="text-xs text-gray-400 mb-4">Menampilkan {{ $products->count() }} dari {{ $products->total() }} produk</p>
-@endif
 
 {{-- Empty state --}}
 @if ($products->isEmpty())
@@ -120,7 +150,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 {{-- Product grid --}}
 @else
     <div id="product-grid"
-         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4"
          data-current-page="{{ $products->currentPage() }}"
          data-has-more="{{ $products->hasMorePages() ? '1' : '0' }}"
          data-base-query="{{ http_build_query(request()->except('page')) }}">
@@ -214,6 +244,9 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
     </div>
     <div id="scroll-sentinel" class="h-1"></div>
 @endif
+
+    </div>{{-- /konten utama --}}
+</div>{{-- /body layout --}}
 
 @endsection
 
