@@ -42,6 +42,9 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
     user-select: none;
     filter: drop-shadow(0 10px 24px rgba(0,0,0,.15));
 }
+@media (max-width: 767px) {
+    .hero-visual { display: none; }
+}
 .trust-chip {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 12px; border-radius: 10px;
@@ -114,8 +117,8 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
             </div>
         </div>
 
-        {{-- Ilustrasi, ditempel di kanan --}}
-        <div class="shrink-0 w-full md:w-auto flex justify-center relative z-10">
+        {{-- Ilustrasi, ditempel di kanan (disembunyikan di mobile agar hero tidak makan tempat) --}}
+        <div class="hidden md:flex shrink-0 w-full md:w-auto justify-center relative z-10">
             <img src="{{ asset('image/hero-shopping.png') }}"
                  alt="Ilustrasi belanja online"
                  class="hero-visual">
@@ -287,10 +290,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 {{-- Product grid --}}
 @else
     <div id="product-grid"
-         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-         data-current-page="{{ $products->currentPage() }}"
-         data-has-more="{{ $products->hasMorePages() ? '1' : '0' }}"
-         data-base-query="{{ http_build_query(request()->except('page')) }}">
+         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         @php
             // Badge "Terlaris" ditentukan otomatis dari sold_count, bukan diset manual oleh admin.
             $goldThreshold  = 20; // >= ini => Best Seller (emas)
@@ -393,102 +393,71 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
         @endforeach
     </div>
 
-    {{-- Infinite scroll loader & sentinel (replaces page-2 pagination) --}}
-    <div id="infinite-loader" class="hidden flex items-center justify-center gap-2 py-8 text-gray-400 text-sm">
-        <i class="bi bi-arrow-repeat animate-spin"></i> Memuat produk lainnya...
-    </div>
-    <div id="infinite-end" class="hidden text-center py-8 text-xs text-gray-300">
-        — Semua produk sudah ditampilkan —
-    </div>
-    <div id="scroll-sentinel" class="h-1"></div>
+    {{-- Pagination --}}
+    @if ($products->hasPages())
+        <div class="flex flex-col items-center gap-2 py-8">
+            <div class="flex items-center gap-1.5">
+                {{-- Previous --}}
+                @if ($products->onFirstPage())
+                    <span class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-300 cursor-not-allowed">
+                        <i class="bi bi-chevron-left"></i>
+                    </span>
+                @else
+                    <a href="{{ $products->previousPageUrl() }}"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-brand transition-colors no-underline">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                @endif
+
+                {{-- Page numbers --}}
+                @php
+                    $current = $products->currentPage();
+                    $last    = $products->lastPage();
+                    $window  = 1; // berapa halaman di kiri/kanan current yang ditampilkan
+                @endphp
+
+                @if ($current > $window + 2)
+                    <a href="{{ $products->url(1) }}"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-brand transition-colors no-underline">1</a>
+                    <span class="w-9 h-9 flex items-center justify-center text-gray-300 text-sm">…</span>
+                @endif
+
+                @for ($i = max(1, $current - $window); $i <= min($last, $current + $window); $i++)
+                    @if ($i == $current)
+                        <span class="w-9 h-9 flex items-center justify-center rounded-xl bg-brand text-white text-sm font-semibold">{{ $i }}</span>
+                    @else
+                        <a href="{{ $products->url($i) }}"
+                           class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-brand transition-colors no-underline">{{ $i }}</a>
+                    @endif
+                @endfor
+
+                @if ($current < $last - $window - 1)
+                    <span class="w-9 h-9 flex items-center justify-center text-gray-300 text-sm">…</span>
+                    <a href="{{ $products->url($last) }}"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-brand transition-colors no-underline">{{ $last }}</a>
+                @endif
+
+                {{-- Next --}}
+                @if ($products->hasMorePages())
+                    <a href="{{ $products->nextPageUrl() }}"
+                       class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-brand transition-colors no-underline">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                @else
+                    <span class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-300 cursor-not-allowed">
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
+                @endif
+            </div>
+            <p class="text-xs text-gray-400">
+                Halaman {{ $products->currentPage() }} dari {{ $products->lastPage() }}
+                — menampilkan {{ $products->firstItem() }}–{{ $products->lastItem() }} dari {{ $products->total() }} produk
+            </p>
+        </div>
+    @endif
 @endif
 
     </div>{{-- /konten utama --}}
 </div>{{-- /body layout --}}
 
 @endsection
-
-@push('scripts')
-<script>
-(function () {
-    var grid     = document.getElementById('product-grid');
-    if (!grid) return; // no products, nothing to infinite-scroll
-
-    var sentinel = document.getElementById('scroll-sentinel');
-    var loader   = document.getElementById('infinite-loader');
-    var endMsg   = document.getElementById('infinite-end');
-
-    var currentPage = parseInt(grid.dataset.currentPage || '1', 10);
-    var hasMore      = grid.dataset.hasMore === '1';
-    var baseQuery    = grid.dataset.baseQuery || '';
-    var baseUrl      = "{{ route('products.index') }}";
-    var loading      = false;
-
-    if (!hasMore) {
-        endMsg.classList.remove('hidden');
-        return;
-    }
-
-    function buildUrl(page) {
-        var qs = baseQuery ? (baseQuery + '&page=' + page) : ('page=' + page);
-        return baseUrl + '?' + qs;
-    }
-
-    function loadNextPage() {
-        if (loading || !hasMore) return;
-        loading = true;
-        loader.classList.remove('hidden');
-
-        var nextPage = currentPage + 1;
-
-        fetch(buildUrl(nextPage), {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            credentials: 'same-origin'
-        })
-        .then(function (res) { return res.text(); })
-        .then(function (html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var newGrid = doc.getElementById('product-grid');
-
-            if (!newGrid) {
-                hasMore = false;
-                loader.classList.add('hidden');
-                endMsg.classList.remove('hidden');
-                return;
-            }
-
-            var cards = newGrid.querySelectorAll('[data-product-card]');
-            cards.forEach(function (card) {
-                grid.appendChild(card);
-            });
-
-            currentPage = parseInt(newGrid.dataset.currentPage || nextPage, 10);
-            hasMore     = newGrid.dataset.hasMore === '1';
-
-            loader.classList.add('hidden');
-
-            if (!hasMore) {
-                endMsg.classList.remove('hidden');
-                observer.disconnect();
-            }
-        })
-        .catch(function () {
-            loader.classList.add('hidden');
-        })
-        .finally(function () {
-            loading = false;
-        });
-    }
-
-    var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                loadNextPage();
-            }
-        });
-    }, { rootMargin: '400px 0px' });
-
-    observer.observe(sentinel);
-})();
-</script>
-@endpush
