@@ -24,34 +24,94 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .sort-pill { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; border: 1.5px solid #e5e7f0; color: #4b5066; transition: all .15s ease; white-space: nowrap; }
 .sort-pill:hover { border-color: #c7caef; color: #3B46F2; }
 .sort-pill.active { background: #3B46F2; border-color: #3B46F2; color: #fff; }
+
+/* Hero: simple aesthetic, white theme */
+.hero-net {
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+    border: 1px solid #EEF0F7;
+}
+.hero-eyebrow { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.hero-visual {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    height: 100%;
+    max-height: 220px;
+    width: auto;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+}
+@media (max-width: 767px) {
+    .hero-visual { display: none; }
+}
+
+/* Best seller badge (auto, based on sold_count) */
+.badge-best {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: .02em;
+    padding: 3px 8px 3px 6px; border-radius: 999px; color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.18);
+}
+.badge-best.tier-gold   { background: linear-gradient(100deg, #F59E0B, #FBBF24); }
+.badge-best.tier-flame  { background: linear-gradient(100deg, #EF4444, #F97316); }
+
+/* Horizontal scroll rows (Kamu Mungkin Suka / Termurah) */
+.scroll-row { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity; padding: 2px 2px 10px; scrollbar-width: none; -ms-overflow-style: none; }
+.scroll-row::-webkit-scrollbar { display: none; }
+.scroll-card { flex: 0 0 158px; scroll-snap-align: start; }
+@media (min-width: 640px) { .scroll-card { flex-basis: 176px; } }
+
+.rank-ribbon {
+    position: absolute; top: 0; left: 0; z-index: 10;
+    min-width: 30px; padding: 4px 8px 5px 7px; border-radius: 0 0 10px 0;
+    font-size: 10px; font-weight: 800; line-height: 1.15; color: #fff; text-align: center;
+}
+.rank-ribbon.rank-1 { background: linear-gradient(160deg, #F97316, #EF4444); }
+.rank-ribbon.rank-2 { background: linear-gradient(160deg, #F59E0B, #D97706); }
+.rank-ribbon.rank-3 { background: linear-gradient(160deg, #94A3B8, #64748B); }
+.rank-badge {
+    position: absolute; top: 6px; left: 6px; z-index: 10;
+    width: 20px; height: 20px; border-radius: 6px;
+    background: rgba(17,24,39,.55); color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
 </style>
 @endpush
 
 @section('content')
 
 {{-- Hero --}}
-<div class="rounded-2xl mb-6 p-5 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-     style="background:linear-gradient(120deg, #1c2050 0%, #2935c9 60%, #3B46F2 100%);">
+<div class="hero-net rounded-2xl mb-6 p-5 md:p-8">
+    <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-5">
 
-    <div class="min-w-0">
-        <span class="inline-block text-[11px] font-semibold uppercase tracking-wide text-white/70 mb-1.5">
-            Global Media Computindo
-        </span>
-        <h1 class="text-xl md:text-2xl font-extrabold text-white leading-snug mb-1">
-            Router, AP, Switch &amp; Radio Second
-        </h1>
-        <p class="text-sm text-white/70">
-            Sudah dicek fisik &amp; fungsi, bergaransi toko — siap pakai.
-        </p>
-    </div>
+        <div class="min-w-0 relative z-10 max-w-lg">
+            <span class="hero-eyebrow inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-500 mb-2">
+                <span class="text-indigo-300">[</span> Global Media Computindo <span class="text-indigo-300">]</span>
+            </span>
+            <h1 class="text-xl md:text-3xl font-extrabold text-gray-900 leading-snug mb-2">
+                Router, AP, Switch &amp; Radio <span class="text-brand">Second</span>
+            </h1>
+            <p class="text-sm md:text-base text-gray-500 mb-4">
+                Sudah dicek fisik &amp; fungsi, bergaransi toko — siap pakai.
+            </p>
+            <div class="flex items-center gap-4">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                    <i class="bi bi-patch-check-fill text-emerald-500"></i> Dicek fisik &amp; fungsi
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                    <i class="bi bi-shield-check text-amber-500"></i> Garansi toko
+                </span>
+            </div>
+        </div>
 
-    <div class="flex flex-wrap gap-2 shrink-0">
-        <span class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white">
-            <i class="bi bi-check2-circle text-emerald-300"></i> Dicek fisik & fungsi
-        </span>
-        <span class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white">
-            <i class="bi bi-shield-check text-indigo-200"></i> Garansi toko
-        </span>
+        {{-- Vector illustration, ditempel di kanan --}}
+        <img src="{{ asset('image/hero-shopping.png') }}"
+             alt="Ilustrasi belanja online"
+             class="hero-visual hidden md:block">
+
     </div>
 </div>
 
@@ -121,6 +181,74 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
             </div>
         </div>
 
+        {{-- Kamu Mungkin Suka --}}
+        @if (isset($recommended) && $recommended->count() && !request('q') && !request('category') && $products->currentPage() == 1)
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Kamu Mungkin Suka</p>
+                    <a href="{{ route('products.index', ['sort' => 'terlaris']) }}" class="text-xs font-semibold text-brand hover:text-brand-dark no-underline flex items-center gap-0.5">
+                        Lihat Semua <i class="bi bi-chevron-right text-[10px]"></i>
+                    </a>
+                </div>
+                <div class="scroll-row">
+                    @foreach ($recommended as $item)
+                        <a href="{{ route('products.show', $item) }}" class="scroll-card no-underline">
+                            <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col h-full">
+                                <div class="w-full aspect-square bg-gray-50 overflow-hidden">
+                                    @if ($item->cover_image)
+                                        <img src="{{ asset('storage/'.$item->cover_image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center"><i class="bi bi-image text-3xl text-gray-200"></i></div>
+                                    @endif
+                                </div>
+                                <div class="p-2.5 flex flex-col flex-1">
+                                    <p class="name-clamp text-xs font-semibold text-gray-900 mb-1.5 leading-snug">{{ $item->name }}</p>
+                                    <p class="font-bold text-gray-900 text-sm mb-0.5 mt-auto">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                                    <p class="text-[11px] text-gray-400 flex items-center gap-1"><i class="bi bi-bag-check"></i> Terjual {{ $item->sold_count ?? 0 }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Termurah --}}
+        @if (isset($cheapest) && $cheapest->count() && !request('q') && !request('category') && $products->currentPage() == 1)
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Termurah</p>
+                    <a href="{{ route('products.index', ['sort' => 'termurah']) }}" class="text-xs font-semibold text-brand hover:text-brand-dark no-underline flex items-center gap-0.5">
+                        Lihat Semua <i class="bi bi-chevron-right text-[10px]"></i>
+                    </a>
+                </div>
+                <div class="scroll-row">
+                    @foreach ($cheapest as $i => $item)
+                        <a href="{{ route('products.show', $item) }}" class="scroll-card no-underline">
+                            <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col h-full relative">
+                                @if ($i < 3)
+                                    <span class="rank-ribbon rank-{{ $i + 1 }}">TOP<br>{{ $i + 1 }}</span>
+                                @else
+                                    <span class="rank-badge">{{ $i + 1 }}</span>
+                                @endif
+                                <div class="w-full aspect-square bg-gray-50 overflow-hidden">
+                                    @if ($item->cover_image)
+                                        <img src="{{ asset('storage/'.$item->cover_image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center"><i class="bi bi-image text-3xl text-gray-200"></i></div>
+                                    @endif
+                                </div>
+                                <div class="p-2.5 flex flex-col flex-1">
+                                    <p class="name-clamp text-xs font-semibold text-gray-900 mb-1.5 leading-snug">{{ $item->name }}</p>
+                                    <p class="font-bold text-gray-900 text-sm mt-auto">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Result count --}}
         @if (! $products->isEmpty())
             <p class="text-xs text-gray-400 mb-4">Menampilkan {{ $products->count() }} dari {{ $products->total() }} produk</p>
@@ -154,7 +282,16 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
          data-current-page="{{ $products->currentPage() }}"
          data-has-more="{{ $products->hasMorePages() ? '1' : '0' }}"
          data-base-query="{{ http_build_query(request()->except('page')) }}">
+        @php
+            // Badge "Terlaris" ditentukan otomatis dari sold_count, bukan diset manual oleh admin.
+            $goldThreshold  = 20; // >= ini => Best Seller (emas)
+            $flameThreshold = 8;  // >= ini => Terlaris (merah-oranye)
+        @endphp
         @foreach ($products as $product)
+            @php
+                $sold = $product->sold_count ?? 0;
+                $bestTier = $sold >= $goldThreshold ? 'gold' : ($sold >= $flameThreshold ? 'flame' : null);
+            @endphp
             <div class="product-card bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col relative" data-product-card>
 
                 {{-- Admin overlay --}}
@@ -176,11 +313,22 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
                                 </button>
                             </form>
                         </div>
-                        @if (!$product->is_active)
-                            <span class="absolute top-2 left-2 z-10 text-[10px] font-bold bg-gray-500 text-white px-2 py-0.5 rounded-full">Nonaktif</span>
-                        @endif
                     @endif
                 @endauth
+
+                {{-- Top-left badges: status + auto best-seller --}}
+                <div class="absolute top-2 left-2 z-10 flex flex-col items-start gap-1">
+                    @auth
+                        @if (Auth::user()->isAdmin() && !$product->is_active)
+                            <span class="text-[10px] font-bold bg-gray-500 text-white px-2 py-0.5 rounded-full">Nonaktif</span>
+                        @endif
+                    @endauth
+                    @if ($bestTier === 'gold')
+                        <span class="badge-best tier-gold"><i class="bi bi-award-fill"></i> Best Seller</span>
+                    @elseif ($bestTier === 'flame')
+                        <span class="badge-best tier-flame"><i class="bi bi-fire"></i> Terlaris</span>
+                    @endif
+                </div>
 
                 {{-- Thumbnail --}}
                 <a href="{{ route('products.show', $product) }}" class="thumb block w-full aspect-square bg-gray-50 overflow-hidden">
@@ -193,6 +341,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
                         </div>
                     @endif
                 </a>
+
 
                 {{-- Body --}}
                 <div class="p-3 flex flex-col flex-1">
