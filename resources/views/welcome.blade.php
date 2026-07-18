@@ -633,7 +633,7 @@
     <div class="mx-auto max-w-6xl px-6 lg:px-8">
         <div class="reveal mx-auto mb-16 max-w-2xl text-center">
             <span class="section-label border border-line bg-white text-indigo shadow-soft">
-                <i class="bi bi-stars"></i> Kenapa Beli di Sini
+                <i></i> Kenapa Beli di Sini
             </span>
             <h2 class="font-display mt-5 text-[34px] font-bold tracking-tight text-ink lg:text-[42px]">Kenapa Beli di Global Media Computindo</h2>
             <p class="mt-4 text-[16.5px] leading-[1.7] text-muted">

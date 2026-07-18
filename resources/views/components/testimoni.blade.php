@@ -8,7 +8,7 @@
 <section id="testimoni" class="bg-canvas py-16 overflow-hidden">
     <div class="reveal mx-auto mb-10 max-w-xl text-center px-6">
         <span class="section-label border border-line bg-white text-indigo shadow-soft">
-            <i class="bi bi-stars"></i> Testimoni
+            <i></i> Testimoni
         </span>
         <h2 class="font-display mt-5 text-[28px] font-bold tracking-tight text-ink lg:text-[34px]">
             Kata Mereka yang Sudah Beli

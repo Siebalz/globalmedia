@@ -119,9 +119,13 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 
 {{-- Product grid --}}
 @else
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div id="product-grid"
+         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+         data-current-page="{{ $products->currentPage() }}"
+         data-has-more="{{ $products->hasMorePages() ? '1' : '0' }}"
+         data-base-query="{{ http_build_query(request()->except('page')) }}">
         @foreach ($products as $product)
-            <div class="product-card bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col relative">
+            <div class="product-card bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col relative" data-product-card>
 
                 {{-- Admin overlay --}}
                 @auth
@@ -201,9 +205,99 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
         @endforeach
     </div>
 
-    <div class="mt-6">
-        {{ $products->links() }}
+    {{-- Infinite scroll loader & sentinel (replaces page-2 pagination) --}}
+    <div id="infinite-loader" class="hidden flex items-center justify-center gap-2 py-8 text-gray-400 text-sm">
+        <i class="bi bi-arrow-repeat animate-spin"></i> Memuat produk lainnya...
     </div>
+    <div id="infinite-end" class="hidden text-center py-8 text-xs text-gray-300">
+        — Semua produk sudah ditampilkan —
+    </div>
+    <div id="scroll-sentinel" class="h-1"></div>
 @endif
 
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    var grid     = document.getElementById('product-grid');
+    if (!grid) return; // no products, nothing to infinite-scroll
+
+    var sentinel = document.getElementById('scroll-sentinel');
+    var loader   = document.getElementById('infinite-loader');
+    var endMsg   = document.getElementById('infinite-end');
+
+    var currentPage = parseInt(grid.dataset.currentPage || '1', 10);
+    var hasMore      = grid.dataset.hasMore === '1';
+    var baseQuery    = grid.dataset.baseQuery || '';
+    var baseUrl      = "{{ route('products.index') }}";
+    var loading      = false;
+
+    if (!hasMore) {
+        endMsg.classList.remove('hidden');
+        return;
+    }
+
+    function buildUrl(page) {
+        var qs = baseQuery ? (baseQuery + '&page=' + page) : ('page=' + page);
+        return baseUrl + '?' + qs;
+    }
+
+    function loadNextPage() {
+        if (loading || !hasMore) return;
+        loading = true;
+        loader.classList.remove('hidden');
+
+        var nextPage = currentPage + 1;
+
+        fetch(buildUrl(nextPage), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin'
+        })
+        .then(function (res) { return res.text(); })
+        .then(function (html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var newGrid = doc.getElementById('product-grid');
+
+            if (!newGrid) {
+                hasMore = false;
+                loader.classList.add('hidden');
+                endMsg.classList.remove('hidden');
+                return;
+            }
+
+            var cards = newGrid.querySelectorAll('[data-product-card]');
+            cards.forEach(function (card) {
+                grid.appendChild(card);
+            });
+
+            currentPage = parseInt(newGrid.dataset.currentPage || nextPage, 10);
+            hasMore     = newGrid.dataset.hasMore === '1';
+
+            loader.classList.add('hidden');
+
+            if (!hasMore) {
+                endMsg.classList.remove('hidden');
+                observer.disconnect();
+            }
+        })
+        .catch(function () {
+            loader.classList.add('hidden');
+        })
+        .finally(function () {
+            loading = false;
+        });
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                loadNextPage();
+            }
+        });
+    }, { rootMargin: '400px 0px' });
+
+    observer.observe(sentinel);
+})();
+</script>
+@endpush
