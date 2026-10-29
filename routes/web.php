@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PaymentSettingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserAdminController;
 use Spatie\Sitemap\SitemapGenerator;
 
 // 🔹 Halaman utama (home/landing)
@@ -40,13 +41,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
 Route::get('/produk/{product}', [ProductController::class, 'show'])->name('products.show');
 
-Route::middleware(['auth', 'admin'])->group(function () {
+// Admin dan uploader: tambah dan edit produk
+Route::middleware(['auth', 'product.manager'])->group(function () {
     Route::get('/produk-create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/produk', [ProductController::class, 'store'])->name('products.store');
     Route::get('/produk/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/produk/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/produk/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 });
+
+// Hanya admin: hapus produk
+Route::middleware(['auth', 'admin'])->delete('/produk/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
 // ─────────────────────────────────────────────────────────────
 // 🛒 KERANJANG & PESANAN PRODUK (wajib login)
@@ -65,6 +69,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/pesanan-produk', [CartController::class, 'adminOrders'])->name('cart.admin-orders');
     Route::patch('/dashboard/pesanan-produk/{productOrder}/status', [CartController::class, 'adminUpdateStatus'])->name('cart.admin-update-status');
     Route::get('/dashboard/laporan', [ReportController::class, 'index'])->name('admin.reports');
+    Route::get('/dashboard/pengguna', [UserAdminController::class, 'index'])->name('admin.users');
+    Route::patch('/dashboard/pengguna/{user}/role', [UserAdminController::class, 'updateRole'])->name('admin.users.role');
 });
 // ─────────────────────────────────────────────────────────────
 

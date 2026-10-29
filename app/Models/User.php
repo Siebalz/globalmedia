@@ -31,9 +31,31 @@ class User extends Authenticatable
         ];
     }
 
+    public const ROLES = ['admin', 'uploader', 'user'];
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isUploader(): bool
+    {
+        return $this->role === 'uploader';
+    }
+
+    // Admin dan uploader boleh menambah dan mengedit produk
+    public function canManageProducts(): bool
+    {
+        return $this->isAdmin() || $this->isUploader();
+    }
+
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            'admin'    => 'Admin',
+            'uploader' => 'Uploader',
+            default    => 'User',
+        };
     }
 
     // Relasi ke keranjang belanja (produk fisik)

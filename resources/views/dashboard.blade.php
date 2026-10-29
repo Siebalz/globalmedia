@@ -243,7 +243,7 @@
                         <div>
                             <p class="text-gray-400 text-xs font-medium mb-0.5">Status</p>
                             <p class="text-gray-900 text-sm font-semibold mb-0">
-                                {{ Auth::user()->isAdmin() ? 'Administrator' : 'Aktif & Terverifikasi' }}
+                                {{ Auth::user()->isAdmin() ? 'Administrator' : (Auth::user()->isUploader() ? 'Uploader' : 'Aktif & Terverifikasi') }}
                             </p>
                         </div>
                     </div>

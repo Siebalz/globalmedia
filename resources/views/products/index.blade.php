@@ -168,7 +168,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
                 </form>
 
                 @auth
-                    @if (Auth::user()->isAdmin())
+                    @if (Auth::user()->canManageProducts())
                         <a href="{{ route('products.create') }}"
                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand-dark transition-colors no-underline whitespace-nowrap">
                             <i class="bi bi-plus-lg"></i> Tambah Produk
@@ -278,7 +278,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
             @endif
         </p>
         @auth
-            @if (Auth::user()->isAdmin())
+            @if (Auth::user()->canManageProducts())
                 <a href="{{ route('products.create') }}"
                    class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand-dark transition-colors no-underline">
                     <i class="bi bi-plus-lg"></i> Tambah Produk Pertama
@@ -305,13 +305,14 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 
                 {{-- Admin overlay --}}
                 @auth
-                    @if (Auth::user()->isAdmin())
+                    @if (Auth::user()->canManageProducts())
                         <div class="absolute top-2 right-2 flex gap-1.5 z-10">
                             <a href="{{ route('products.edit', $product) }}"
                                class="w-7 h-7 rounded-lg bg-white/90 text-gray-500 hover:text-brand flex items-center justify-center text-sm shadow-sm transition-colors"
                                title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            @if (Auth::user()->isAdmin())
                             <form action="{{ route('products.destroy', $product) }}" method="POST"
                                   onsubmit="return confirm('Hapus produk ini?')">
                                 @csrf @method('DELETE')
@@ -321,6 +322,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
+                            @endif
                         </div>
                     @endif
                 @endauth
@@ -328,7 +330,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
                 {{-- Top-left badges: status + auto best-seller --}}
                 <div class="absolute top-2 left-2 z-10 flex flex-col items-start gap-1">
                     @auth
-                        @if (Auth::user()->isAdmin() && !$product->is_active)
+                        @if (Auth::user()->canManageProducts() && !$product->is_active)
                             <span class="text-[10px] font-bold bg-gray-500 text-white px-2 py-0.5 rounded-full">Nonaktif</span>
                         @endif
                     @endauth

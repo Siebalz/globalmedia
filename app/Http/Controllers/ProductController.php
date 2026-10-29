@@ -18,8 +18,8 @@ class ProductController extends Controller
     {
         $query = Product::query()->with('images');
 
-        // Admin bisa lihat produk nonaktif juga, pengunjung umum hanya yang aktif
-        if (! Auth::check() || ! Auth::user()->isAdmin()) {
+        // Admin dan uploader bisa lihat produk nonaktif juga, pengunjung umum hanya yang aktif
+        if (! Auth::check() || ! Auth::user()->canManageProducts()) {
             $query->where('is_active', true);
         }
 
@@ -50,7 +50,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load('images');
-        $isAdmin = Auth::check() && Auth::user()->isAdmin();
+        $isAdmin = Auth::check() && Auth::user()->canManageProducts();
 
         if (! $product->is_active && ! $isAdmin) {
             abort(404);

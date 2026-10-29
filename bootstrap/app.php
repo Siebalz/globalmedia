@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     // Alias middleware
     $middleware->alias([
         'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        'product.manager' => \App\Http\Middleware\EnsureCanManageProducts::class,
         'admin.stealth' => \App\Http\Middleware\PreventAdminEnumeration::class,
     ]);
     })

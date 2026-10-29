@@ -231,12 +231,13 @@
 
             {{-- Admin actions --}}
             @auth
-                @if (Auth::user()->isAdmin())
+                @if (Auth::user()->canManageProducts())
                     <div class="mt-5 pt-4 border-t border-gray-100 flex gap-2 flex-wrap">
                         <a href="{{ route('products.edit', $product) }}"
                            class="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-600 hover:border-brand hover:text-brand text-sm font-semibold rounded-xl no-underline transition-colors">
                             <i class="bi bi-pencil"></i> Edit Produk
                         </a>
+                        @if (Auth::user()->isAdmin())
                         <form action="{{ route('products.destroy', $product) }}" method="POST"
                               onsubmit="return confirm('Hapus produk ini?')">
                             @csrf @method('DELETE')
@@ -245,6 +246,7 @@
                                 <i class="bi bi-trash"></i> Hapus
                             </button>
                         </form>
+                        @endif
                     </div>
                 @endif
             @endauth

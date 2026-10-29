@@ -200,6 +200,9 @@
                 <a href="{{ route('admin.reports') }}" class="nav-link {{ request()->routeIs('admin.reports') ? 'active' : '' }}">
                     <i class="bi bi-graph-up-arrow"></i> Laporan
                 </a>
+                <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i> Pengguna
+                </a>
                 <a href="{{ route('settings.payment.edit') }}" class="nav-link {{ request()->routeIs('settings.payment.edit') ? 'active' : '' }}">
                     <i class="bi bi-gear"></i> Pengaturan
                 </a>
@@ -220,7 +223,7 @@
             <div class="user-chip">
                 <div class="text-end">
                     <div class="name">{{ Auth::user()->name }}</div>
-                    <div class="role">{{ Auth::user()->isAdmin() ? 'Admin' : Auth::user()->email }}</div>
+                    <div class="role">{{ Auth::user()->isAdmin() || Auth::user()->isUploader() ? Auth::user()->roleLabel() : Auth::user()->email }}</div>
                 </div>
                 <div class="avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
             </div>
